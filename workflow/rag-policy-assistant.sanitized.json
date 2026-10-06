@@ -1,0 +1,39 @@
+{
+  "name": "RAG Policy Assistant - Sanitized Portfolio Template",
+  "active": false,
+  "portfolio_note": "Public-safe architecture template. Configure credentials and resource identifiers in your own n8n environment.",
+  "architecture": {
+    "ingestion": [
+      "Google Drive Trigger - approved policy folder",
+      "Download File",
+      "Extract PDF Text",
+      "Create OpenAI Embeddings",
+      "Store in Pinecone policy namespace"
+    ],
+    "chat": [
+      "n8n Chat Trigger",
+      "AI Agent",
+      "Pinecone Retrieval Tool",
+      "OpenAI Embeddings for retrieval",
+      "OpenRouter / DeepSeek chat model",
+      "Grounded response or human escalation"
+    ]
+  },
+  "required_configuration": {
+    "google_drive_folder": "CONFIGURE_IN_N8N",
+    "google_drive_credentials": "CONFIGURE_IN_N8N",
+    "openai_credentials": "CONFIGURE_IN_N8N",
+    "pinecone_credentials": "CONFIGURE_IN_N8N",
+    "pinecone_index": "CONFIGURE_IN_N8N",
+    "pinecone_namespace": "company-policies",
+    "openrouter_credentials": "CONFIGURE_IN_N8N",
+    "chat_model": "deepseek/deepseek-v3.2"
+  },
+  "security": {
+    "credential_ids_removed": true,
+    "folder_ids_removed": true,
+    "webhook_ids_removed": true,
+    "instance_ids_removed": true,
+    "api_keys_included": false
+  }
+}
