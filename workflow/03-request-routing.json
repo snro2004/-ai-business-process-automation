@@ -1,0 +1,218 @@
+{
+  "name": "ABC Diagnostics — PTO Request Routing",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ABC Diagnostics — PTO Request",
+        "formDescription": "Submit a PTO request for review. Submitting this form does not approve your request.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Employee Name",
+              "fieldName": "employee_name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Request Type",
+              "fieldType": "dropdown",
+              "fieldName": "request_type",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Planned PTO"
+                  },
+                  {
+                    "option": "Policy exception"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Request Details",
+              "fieldType": "textarea",
+              "fieldName": "request_details",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "2988ce4e-afd8-4428-8213-0176fdfd959d",
+      "name": "PTO Request Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst assignedTo = item.request_type === 'Policy exception' ? 'HR' : 'Manager';\nreturn [{\n  json: {\n    employee_name: item.employee_name ?? null,\n    request_type: item.request_type ?? null,\n    request_details: item.request_details ?? null,\n    policy_id: 'abc-pto',\n    assigned_to: assignedTo,\n    status: 'Pending review',\n  },\n}];"
+      },
+      "id": "7c2350b7-6421-4bd4-b3ac-618f7d406d2c",
+      "name": "Prepare Request Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "SELECT_ABC_PTO_REQUESTS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_name": "={{ $json.employee_name }}",
+            "request_type": "={{ $json.request_type }}",
+            "request_details": "={{ $json.request_details }}",
+            "policy_id": "abc-pto",
+            "assigned_to": "={{ $json.assigned_to }}",
+            "status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "employee_name",
+              "displayName": "employee_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "request_type",
+              "displayName": "request_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "request_details",
+              "displayName": "request_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "policy_id",
+              "displayName": "policy_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "assigned_to",
+              "displayName": "assigned_to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f0eb2bef-5374-418d-9739-b46c4b437210",
+      "name": "Save PTO Request",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Request recorded",
+        "completionMessage": "=Thank you, {{ $(\"PTO Request Form\").first().json.employee_name }}. Your {{ $(\"PTO Request Form\").first().json.request_type }} request has been recorded for review and assigned to {{ $(\"Prepare Request Row\").first().json.assigned_to }}. Status: Pending review. This request has NOT been approved.",
+        "options": {}
+      },
+      "id": "a18e0870-0559-4209-b9f0-1958869ae1bc",
+      "name": "Confirmation",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "PTO Request Form": {
+      "main": [
+        [
+          {
+            "node": "Prepare Request Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Request Row": {
+      "main": [
+        [
+          {
+            "node": "Save PTO Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save PTO Request": {
+      "main": [
+        [
+          {
+            "node": "Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}

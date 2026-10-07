@@ -1,7 +1,3 @@
-# Example Output
+# Observed response
 
-**Question:** Can unused PTO carry over into next year?
-
-**Example assistant behavior:** Retrieve the applicable section of the approved PTO policy, summarize the stated carryover rule, identify the policy as the source, and avoid adding benefits or exceptions not supported by the document.
-
-If the employee asks for an exception, route the request for authorized human review rather than promising an exception.
+A full-time employee with three years of completed service receives 18 days of annual PTO. Source: ABC Diagnostics Paid Time Off Policy, Section 3. This is one observed live response, not a fixed output.

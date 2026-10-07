@@ -1,9 +1,3 @@
-# Scope and Assumptions
+# Assumptions
 
-This is a personal learning project using fictional company information.
-
-- ABC Diagnostics Inc. is fictional.
-- The included policy is demonstration data, not legal or HR advice.
-- The prototype assumes approved PDFs are placed in a controlled source folder.
-- Production authentication, authorization, retention, audit logging, legal review, and enterprise security controls are outside this prototype's scope.
-- No production ROI or performance result is claimed.
+One text-based fictional PDF, fixed abc-pto policy key, n8n Data Tables, available model access, and separate chat/form entry points. No real employee data.

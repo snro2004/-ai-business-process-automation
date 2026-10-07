@@ -1,0 +1,167 @@
+{
+  "name": "ABC Diagnostics — PTO Policy Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ABC Diagnostics — PTO PDF Intake",
+        "formDescription": "Upload your PTO policy PDF (single file).",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "policy_pdf",
+              "fieldLabel": "PTO Policy PDF",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b64f8a61-435b-4c0a-a8cb-a868539a5405",
+      "name": "On Form Submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "policy_pdf",
+        "options": {}
+      },
+      "id": "cc5c0b8c-f073-4984-bb23-dde82ae32ec2",
+      "name": "Extract Text from PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inJson = $input.first().json;\nconst text = inJson.text ?? inJson.json?.text ?? null;\nconst row = {\n  policy_id: 'abc-pto',\n  policy_name: 'ABC Diagnostics Paid Time Off Policy',\n  policy_text: text,\n};\nreturn [{ json: row }];"
+      },
+      "id": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6",
+      "name": "Prepare Policy Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "SELECT_ABC_POLICIES"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "policy_id",
+              "keyValue": "abc-pto"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "policy_id": "abc-pto",
+            "policy_name": "ABC Diagnostics Paid Time Off Policy",
+            "policy_text": "={{ $json.policy_text }}"
+          },
+          "schema": [
+            {
+              "id": "policy_id",
+              "displayName": "policy_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "policy_name",
+              "displayName": "policy_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "policy_text",
+              "displayName": "policy_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3c2a1e4-7b1d-4a6e-9c5d-2e8f0a1b3c4d",
+      "name": "Upsert Policy Row",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On Form Submission": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from PDF": {
+      "main": [
+        [
+          {
+            "node": "Prepare Policy Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Policy Row": {
+      "main": [
+        [
+          {
+            "node": "Upsert Policy Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}

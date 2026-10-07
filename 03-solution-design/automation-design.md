@@ -1,19 +1,16 @@
-# Automation Design
+# Architecture
 
-## Document Ingestion
+Three separate workflows share persistent n8n Data Tables.
 
-1. An approved policy PDF is placed in the designated source folder.
-2. n8n detects the new file.
-3. The file is downloaded and its text is extracted.
-4. Text is divided into retrievable document chunks by the vector-store integration.
-5. Embeddings are created.
-6. The content is stored in Pinecone under the configured knowledge-base namespace.
+```mermaid
+flowchart TD
+  I[PDF ingestion] --> P[(ABC Policies)]
+  P --> Q[Policy questions]
+  Q --> A[AI response with source]
+  F[Request form] --> R[(ABC PTO Requests)]
+  R --> C[Pending-review confirmation]
+```
 
-## Question Answering
+Ingestion uses a fixed `abc-pto` key and upsert. Questions retrieves one policy row and supplies the complete stored text in the system prompt. The user prompt directly references the Chat Trigger, since a table lookup replaces the current item's fields. Routing uses deterministic code and a separate form, assigning exceptions to HR and other submitted types to Manager. The form dropdown limits expected types, but the code lacks an explicit unknown-type rejection.
 
-1. An employee submits a question.
-2. The AI agent receives the question.
-3. The retrieval tool searches the policy knowledge base.
-4. Relevant policy context is returned to the agent.
-5. The language model produces an answer based on that context.
-6. Questions that lack sufficient support or require judgment should be escalated rather than guessed.
+The model has no tools or memory connected. It cannot write requests or approve them. Human review remains outside the implementation.

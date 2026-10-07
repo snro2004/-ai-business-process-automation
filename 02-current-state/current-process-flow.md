@@ -1,12 +1,3 @@
-# Current Process Flow
+# Illustrative manual process
 
-```mermaid
-flowchart LR
-    A[Employee Question] --> B[Search Files / Ask Coworker]
-    B --> C[Open Policy Documents]
-    C --> D[Find Relevant Language]
-    D --> E{Clear Answer?}
-    E -- Yes --> F[Interpret and Act]
-    E -- No --> G[Escalate to Policy Owner / HR]
-    G --> F
-```
+Employee reads policy or asks HR; reviewer interprets policy; employee submits details; Manager or HR reviews. This is an illustrative process, not an observed company workflow.

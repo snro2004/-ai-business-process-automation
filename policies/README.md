@@ -1,3 +1,3 @@
-# Fictional Policies
+# Fictional policy
 
-The documents in this folder are fictional demonstration content created solely for this learning project. They do not represent a real employer's policies and should not be used as HR, legal, or benefits guidance.
+The supplied PTO PDF is fictional training material, not a real company policy. Version 1 supports this single policy only.

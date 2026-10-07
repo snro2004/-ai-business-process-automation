@@ -1,0 +1,129 @@
+{
+  "name": "ABC Diagnostics — PTO Questions",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "streaming"
+        }
+      },
+      "id": "9d3927f3-25d4-4ecc-b6bb-c01a2f8c1d0e",
+      "name": "Employee Question",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "SELECT_ABC_POLICIES"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "policy_id",
+              "keyValue": "abc-pto"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "id": "09e7e12e-2a01-43d9-94d3-b88e7e33c1f4",
+      "name": "Get PTO Policy",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Employee Question').first().json.chatInput }}",
+        "options": {
+          "systemMessage": "=You are the PTO policy assistant for ABC Diagnostics. You answer employee questions strictly using the company policy text below.\n\nPolicy name: {{ $('Get PTO Policy').item.json.policy_name }}\n\nPolicy text:\n{{ $('Get PTO Policy').item.json.policy_text }}\n\nRules:\n- Answer only from the policy text above. Do not invent policy provisions.\n- In every answer, cite the source: the policy name and the relevant section heading or quote.\n- If the policy text does not answer the question, say clearly: \"The policy does not address this.\" and suggest the employee contact HR.\n- Never approve requests, exceptions, or special arrangements. If asked for an approval or exception, explain that you cannot approve anything and direct the employee to HR."
+        }
+      },
+      "id": "695ed332-c172-4e5f-884a-600558d892c8",
+      "name": "Answer PTO Question",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "low"
+        }
+      },
+      "id": "9978ff9b-6b0c-41f3-978d-f98bba054423",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        336
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Employee Question": {
+      "main": [
+        [
+          {
+            "node": "Get PTO Policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PTO Policy": {
+      "main": [
+        [
+          {
+            "node": "Answer PTO Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer PTO Question",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
